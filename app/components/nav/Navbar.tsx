@@ -6,39 +6,41 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import Container from "../Container";
+import Container from "@/app/components/Container";
 import { useEffect, useState } from "react";
-// import { MenuIcon, XIcon } from '@heroicons/react@v1/outline';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { closeMenu, toggleMenu } from "@/features/menu/menuSlice";
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const dispatch = useDispatch();
+  const isOpen = useSelector((state: RootState) => state.menu.isOpen);
+  // const toggleMenu = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   const handleResize = () => {
     if (window.innerWidth >= 1024) {
-      // 1024px corresponds to Tailwind's `lg` breakpoint
-      setIsOpen(false);
+      dispatch(closeMenu());
     }
   };
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check
+    handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  console.log("isOpen", isOpen);
+  console.log("isOpen: ", isOpen);
 
   return (
     <div className="sticky top-0 w-full z-30 shadow-sm">
       <nav className="bg-black">
         <Container>
-          <div className="flex flex-col-reverse gap-2 flex-grow md:flex-row md:justify-between md:items-center text-white">
+          <div className="topnav">
             <Link href="/" className="hidden lg:block">
               My E-commerce
             </Link>
@@ -73,9 +75,13 @@ const Navbar: React.FC = () => {
       </nav>
       <div className="bg-slate-100">
         <Container>
-          <div className="block lg:hidden">
-            <button onClick={toggleMenu}>
-              <MenuOutlinedIcon />
+          <div className="block lg:hidden px-1 py-3">
+            <button
+              onClick={() => dispatch(toggleMenu())}
+              className="flex items-center"
+            >
+              <MenuOutlinedIcon className="text-slate-500" />
+              <span className="ml-1 uppercase font-bold text-sm">Menu</span>
             </button>
           </div>
 
@@ -144,78 +150,83 @@ const Navbar: React.FC = () => {
             </ul>
           </div>
         </Container>
-        {isOpen ? (
-          <div className="block lg:hidden fixed top-0 z-50 h-screen w-60 px-6 py-10 bg-slate-200 text-sm text-black">
-            <div className="absolute top-0 right-0 size-10 bg-black text-slate-300 flex justify-center items-center">
-              <CloseOutlinedIcon className="transition-transform duration-500 ease-in-out transform hover:rotate-90 hover:cursor-pointer" />
-            </div>
-            <ul className="menu">
-              <li>
-                <Link href="#" className="link">
-                  Shop
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Vegetables & Fruits
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Groceries
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Meat & Meat Products
-                </Link>
-              </li>
-
-              <li>
-                <Link href="#" className="link">
-                  Dairy Products
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Beverages
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Machineries & Tools
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Shoes & Clothes
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Electronics
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Medicine & Pharmaceuticals
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Vendor Membership
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="link">
-                  Agents Registration
-                </Link>
-              </li>
-            </ul>
+        <div
+          className={`${
+            isOpen
+              ? "sidebar left-0 ease-in-out duration-1000"
+              : "sidebar -left-full ease-in duration-300"
+          }`}
+        >
+          <div
+            onClick={() => dispatch(closeMenu())}
+            className="closeIconContainer"
+          >
+            <CloseOutlinedIcon className="closeIcon" />
           </div>
-        ) : (
-          <div></div>
-        )}
+          <ul className="menu">
+            <li>
+              <Link href="#" className="link">
+                Shop
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Vegetables & Fruits
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Groceries
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Meat & Meat Products
+              </Link>
+            </li>
+
+            <li>
+              <Link href="#" className="link">
+                Dairy Products
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Beverages
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Machineries & Tools
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Shoes & Clothes
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Electronics
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Medicine & Pharmaceuticals
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Vendor Membership
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="link">
+                Agents Registration
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
