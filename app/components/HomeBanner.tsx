@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const HomeBanner: React.FC = () => {
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-blue-700 mb-8">
+    <div className="bg-gradient-to-r from-blue-500 to-blue-700 mb-8 shadow-md shadow-blue-600/50">
       <div className="flex flex-col md:flex-row items-center justify-evenly px-8 py-12">
         <div className="flex flex-col mb-8 md:mb-0 text-center">
           <h1 className="text-4xl md:text-6xl mb-4 text-white font-bold">

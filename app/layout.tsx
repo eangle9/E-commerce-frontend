@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <html lang="en">
-      <title>My E-commerce Site</title>
+      <title>Eagle Shop</title>
       <body className={inter.className}>
         <WrappedClientLayout>{children}</WrappedClientLayout>
       </body>

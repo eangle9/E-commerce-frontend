@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { closeMenu, toggleMenu } from "@/features/menu/menuSlice";
+import Image from "next/image";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,13 +38,16 @@ const Navbar: React.FC = () => {
   console.log("isOpen: ", isOpen);
 
   return (
-    <div className="sticky top-0 w-full z-30 shadow-sm">
+    <div className="sticky top-0 w-full z-30 shadow-sm shadow-slate-100/50">
       <nav className="bg-black">
         <Container>
           <div className="topnav">
-            <Link href="/" className="hidden lg:block">
-              My E-commerce
-            </Link>
+            <div className=" flex items-center">
+              <img src="/images/eagle-logo.jpg" alt="eagle-logo" className="hidden lg:block h-10 w-auto "/>
+              <Link href="/" className="hidden lg:block text-lg font-bold">
+                Eagle Shop
+              </Link>
+            </div>
             <div className="w-full mb-2.5 md:mb-0 md:w-1/2 flex relative">
               <input type="text" placeholder="Search..." className="w-full" />
               <button className="searchbtn">
@@ -51,6 +55,7 @@ const Navbar: React.FC = () => {
               </button>
             </div>
             <div className="flex justify-evenly mt-2.5 md:mt-0 items-center md:gap-10">
+            <img src="/images/eagle-logo.jpg" alt="eagle-logo" className="block md:hidden h-12 w-auto "/>
               <Link href="/account" className="flex items-center gap-2">
                 <PersonOutlineOutlinedIcon className="size-9 text-slate-100" />
                 <div className="flex flex-col">
@@ -153,7 +158,7 @@ const Navbar: React.FC = () => {
         <div
           className={`${
             isOpen
-              ? "sidebar left-0 ease-in-out duration-1000"
+              ? "sidebar left-0 ease-in-out duration-1000 shadow-md shadow-slate-100/50"
               : "sidebar -left-full ease-in duration-300"
           }`}
         >
