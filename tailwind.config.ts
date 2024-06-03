@@ -7,12 +7,27 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens: {
+      'xs': '540px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+         "cart-image": "url('/images/cart-image.svg')", 
       },
+      maxHeight: {
+        'custom': 'calc(100% - 96px)',
+      },
+      maxWidth: {
+        'custom-width': 'calc(100% - 32px)'
+      }
     },
   },
   // theme: {

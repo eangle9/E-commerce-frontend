@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
         {/* <div className="pt-16 pb-8 flex flex-col sm:flex-row sm:flex-nowrap justify-between"> */}
         <div className="grid grid-cols-2 md:grid-cols-4 content-between pb-8 pt-16">
           <FooterList>
-            <h1 className="text-base font-bold mb-2">Shop Categories</h1>
+            <h1 className="text-base font-bold mb-2 whitespace-nowrap">Shop Categories</h1>
             <Link href="#" className="link">
               Electronics
             </Link>
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
             </Link>
           </FooterList>
           <FooterList>
-            <h1 className="text-base font-bold mb-2">Customer Service</h1>
+            <h1 className="text-base font-bold mb-2 whitespace-nowrap">Customer Service</h1>
             <Link href="#" className="link">
               Contact Us
             </Link>
@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
           </FooterList>
           {/* <div className="w-full md:w-1/3 mb-6 md:mb-0 pr-5"> */}
           <FooterList>
-            <h1 className="text-base font-bold mb-2">About Us</h1>
+            <h1 className="text-base font-bold mb-2 whitespace-nowrap">About Us</h1>
             <Link href="#" className="link">
               About Eagle Shop
             </Link>
@@ -82,7 +82,7 @@ const Footer: React.FC = () => {
             </p> */}
           {/* </div> */}
           <FooterList>
-            <h1 className="text-base font-bold mb-2">Follow Us</h1>
+            <h1 className="text-base font-bold mb-2 whitespace-nowrap">Follow Us</h1>
             <div className="flex gap-2 text-white">
               <Link href="#" className="hover:opacity-70 transition">
                 <FacebookOutlinedIcon />
