@@ -2,13 +2,14 @@
 
 import formatNumber from "@/utils/formatNumber";
 import truncateText from "@/utils/truncateText";
+import { Product, Review } from "@/utils/types";
 import { Rating } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { MouseEvent, useState } from "react";
 
 interface ProductCardProps {
-  data: any;
+  data: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
@@ -25,19 +26,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
     setIsEyeClicked(!isEyeClicked);
   };
 
-  const discountPercentage = Math.round((data.discount / data.price) * 100);
-
+  const discountPercentage = Math.round(
+    (data.product_items[0].discount / data.product_items[0].price) * 100
+  );
+  // const discountPercentage = 50
+  console.log("data: ", data);
   const productRating =
-    data.reviews.reduce((acc: number, item: any) => item.rating + acc, 0) /
-    data.reviews.length;
+    data.reviews?.reduce((acc: number, item: Review) => item.rating + acc, 0) /
+    data.reviews?.length;
+  // const productRating = 3
 
   return (
-    <Link href="#" className="group outer-wrapper">
+    <Link href={`/product/${data.product_id}`} className="group outer-wrapper">
       <div className="inner-wrapper">
         <div className="image-wrapper">
           <Image
             fill
-            src="/images/hp-pavillion.jpg"
+            src={data.product_items[0].image_url}
+            // src="/images/hp-pavillion.jpg"
             alt="hp-pavillion"
             className="image"
           />
@@ -158,7 +164,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
           </div>
         </div>
         <div className="flex flex-col w-full relative">
-          <div className="mb-1 text-[13px] xs:text-sm ">{truncateText(data.name)}</div>
+          <div className="mb-1 text-[13px] xs:text-sm ">
+            {truncateText(data.name)}
+          </div>
           <div className="flex items-center gap-1 text-sm">
             <Rating
               name="pdt-rating"
@@ -167,14 +175,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
               readOnly
               size="small"
             />
-            <span>({data.reviews.length})</span>
+            <span>({data.product_items.length})</span>
+            {/* <span>({data.reviews.length})</span> */}
           </div>
-          <div className="flex items-center gap-1 text-xs sm:text-sm sm:gap-2">
+          <div className="flex-col items-center gap-1 text-xs xs:flex-row sm:text-sm sm:gap-2">
             <p className="font-semibold text-red-500">
-              {formatNumber(data.price)}
+              {formatNumber(data.product_items[0].price)}
             </p>
             <p className="text-slate-700 line-through">
-              {formatNumber(data.discount)}
+              {formatNumber(data.product_items[0].discount)}
             </p>
           </div>
           <div className="cart-wrapper">

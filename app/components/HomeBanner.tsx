@@ -1,3 +1,4 @@
+import { Fullscreen } from "@mui/icons-material";
 import Image from "next/image";
 
 const HomeBanner: React.FC = () => {
@@ -19,6 +20,8 @@ const HomeBanner: React.FC = () => {
           <Image
             src="/images/banner-image.png"
             alt="banner-image"
+            // width={2510}
+            // height={1292}
             fill
             className="object-contain"
           />

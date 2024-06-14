@@ -6,6 +6,8 @@ import store, { RootState } from "@/redux/store";
 import Navbar from "../components/nav/Navbar";
 import Footer from "../components/footer/Footer";
 import { closeMenu } from "@/features/menu/menuSlice";
+// import { useGetAllProductsQuery } from "@/features/products/productsApi";
+import { fetchProducts } from "@/features/products/productsSlice";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -17,8 +19,8 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   const handleClickOutside = (event: MouseEvent) => {
     console.log("clicked target: ", event.target);
     if (
-      layoutRef.current 
-    //   !layoutRef.current.contains(event.target as Node)
+      layoutRef.current
+      //   !layoutRef.current.contains(event.target as Node)
     ) {
       console.log("clicked outside", "closing menu");
       dispatch(closeMenu());
@@ -48,6 +50,8 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
     </div>
   );
 };
+
+store.dispatch(fetchProducts());
 
 const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
