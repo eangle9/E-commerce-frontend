@@ -31,7 +31,8 @@ export type CartProductType = {
   selectedColor: string;
   selectedSize: string;
   discount: number;
-  // inStock: number
+  inStock: number;
+  cartQuantity: number;
   // quantity: number;
 };
 
@@ -73,6 +74,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         : Array.isArray(product.items) && product.items.length > 0
         ? product.items[0].discount
         : 0,
+    inStock:
+      Array.isArray(product.items[0].sizes) && product.items[0].sizes.length > 0
+        ? product.items[0].sizes[0].qty_in_stock
+        : Array.isArray(product.items) && product.items.length > 0
+        ? product.items[0].in_stock
+        : 0,
+    cartQuantity: 0,
     // selectedImage: { ...product.images[0] },
     // quantity: 1,
   });
@@ -97,7 +105,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       price: number,
       discount: number,
       item_id: number,
-      size_id: number | null
+      size_id: number | null,
+      in_stock: number
     ) => {
       setCartProduct((prev) => {
         return {
@@ -108,6 +117,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           discount: discount,
           item_id: item_id,
           size_id: size_id,
+          inStock: in_stock,
         };
       });
     },
@@ -115,11 +125,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       cartProduct.selectedImage,
       cartProduct.selectedColor,
       cartProduct.selectedPrice,
+      cartProduct.discount,
+      cartProduct.item_id,
+      cartProduct.size_id,
+      cartProduct.inStock,
     ]
   );
 
   const handleSelectSize = useCallback(
-    (size: string, discount: number, price: number, size_id: number) => {
+    (
+      size: string,
+      discount: number,
+      price: number,
+      size_id: number,
+      in_stock: number
+    ) => {
       setCartProduct((prev) => {
         return {
           ...prev,
@@ -127,10 +147,17 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
           discount: discount,
           selectedPrice: price,
           size_id: size_id,
+          inStock: in_stock,
         };
       });
     },
-    [cartProduct.selectedSize, cartProduct.discount, cartProduct.selectedPrice]
+    [
+      cartProduct.selectedSize,
+      cartProduct.discount,
+      cartProduct.selectedPrice,
+      cartProduct.size_id,
+      cartProduct.inStock,
+    ]
   );
 
   const discountPercentage = Math.round(

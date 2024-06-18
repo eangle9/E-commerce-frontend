@@ -6,7 +6,7 @@ import { Item, ProductSize } from "@/utils/types";
 interface SetSizeType {
   item: Item;
   cartProduct: CartProductType;
-  handleSelectSize: (size: string, discount: number, price: number, size_id: number) => void;
+  handleSelectSize: (size: string, discount: number, price: number, size_id: number, in_stock: number) => void;
 }
 
 const SetSize: React.FC<SetSizeType> = ({
@@ -26,7 +26,7 @@ const SetSize: React.FC<SetSizeType> = ({
               <div
                 key={size.id}
                 onClick={() =>
-                  handleSelectSize(size.size, size.discount, size.price, size.id)
+                  handleSelectSize(size.size, size.discount, size.price, size.id, size.qty_in_stock)
                 }
                 className={`w-18 h-18 border-teal-400 rounded-sm flex items-center justify-center ${
                   cartProduct.selectedSize === size.size

@@ -15,7 +15,8 @@ interface SetColorType {
     price: number,
     discount: number,
     item_id: number,
-    size_id: number | null
+    size_id: number | null,
+    in_stock: number
   ) => void;
 }
 
@@ -46,6 +47,16 @@ const SetColor: React.FC<SetColorType> = ({
     return null;
   };
 
+  const InStock = (item: Item): number => {
+    if (Array.isArray(item.sizes) && item.sizes.length > 0) {
+      const in_stock: number = item.sizes[0].qty_in_stock;
+      return in_stock;
+    }
+
+    const in_stock: number = item.in_stock;
+    return in_stock;
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-2">
@@ -62,7 +73,8 @@ const SetColor: React.FC<SetColorType> = ({
                     image.price,
                     Discount(image),
                     image.item_id,
-                    Size(image)
+                    Size(image),
+                    InStock(image)
                   )
                 }
                 className={`w-18 h-18 border-teal-400 rounded-sm flex items-center justify-center ${

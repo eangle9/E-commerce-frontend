@@ -20,6 +20,7 @@ export interface ProductSize {
   size: string;
   price: number;
   discount: number;
+  qty_in_stock: number;
 }
 
 export interface Item {
