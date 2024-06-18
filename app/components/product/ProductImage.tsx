@@ -13,7 +13,8 @@ interface ProductImageProps {
     price: number,
     discount: number,
     item_id: number,
-    size_id: number | null
+    size_id: number | null,
+    in_stock: number
   ) => void;
 }
 
@@ -44,6 +45,16 @@ const ProductImage: React.FC<ProductImageProps> = ({
     return null;
   };
 
+  const InStock = (item: Item): number => {
+    if (Array.isArray(item.sizes) && item.sizes.length > 0) {
+      const in_stock: number = item.sizes[0].qty_in_stock;
+      return in_stock;
+    }
+
+    const in_stock: number = item.in_stock;
+    return in_stock;
+  };
+
   return (
     <div className="grid grid-cols-6 gap-2 h-full max-h-[500px] min-h-[300px] sm:min-h-[400px]">
       <div className="flex flex-col gap-2 items-center justify-center border max-h-[500px] min-h-[300px] sm:min-h-[400px]">
@@ -58,7 +69,8 @@ const ProductImage: React.FC<ProductImageProps> = ({
                   item.price,
                   Discount(item),
                   item.item_id,
-                  Size(item)
+                  Size(item),
+                  InStock(item)
                 )
               }
               className={`relative w-[80%] aspect-square cursor-pointer rounded border-teal-300 ${
