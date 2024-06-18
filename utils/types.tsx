@@ -15,14 +15,22 @@ export interface SingleProduct {
   reviews: Review[];
 }
 
+export interface ProductSize {
+  id: number;
+  size: string;
+  price: number;
+  discount: number;
+}
+
 export interface Item {
   item_id: number;
   color: string;
-  size: string;
+  // size: string;
   image_url: string;
   price: number;
   discount: number;
   in_stock: number;
+  sizes: ProductSize[];
 }
 
 export interface Review {

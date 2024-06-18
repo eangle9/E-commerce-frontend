@@ -27,9 +27,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   };
 
   const discountPercentage = Math.round(
-    (data.product_items[0].discount / data.product_items[0].price) * 100
+    Array.isArray(data.product_items[0].sizes) &&
+      data.product_items[0].sizes.length > 0 &&
+      data.product_items[0].discount != 0
+      ? (data.product_items[0].sizes[0].price /
+          data.product_items[0].sizes[0].discount) *
+          100 -
+          100
+      : Array.isArray(data.product_items) &&
+        data.product_items.length > 0 &&
+        data.product_items[0].discount != 0
+      ? (data.product_items[0].price / data.product_items[0].discount) * 100 -
+        100
+      : 0
   );
-  // const discountPercentage = 50
+  // const discountPercentage = Math.round(
+  //   (data.product_items[0].discount / data.product_items[0].price) * 100
+  // );
+
   console.log("data: ", data);
   const productRating =
     data.reviews?.reduce((acc: number, item: Review) => item.rating + acc, 0) /
@@ -178,12 +193,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
             <span>({data.product_items.length})</span>
             {/* <span>({data.reviews.length})</span> */}
           </div>
-          <div className="flex-col items-center gap-1 text-xs xs:flex-row sm:text-sm sm:gap-2">
+          <div className="flex flex-col justify-start xs:items-center gap-1 text-xs xs:flex-row sm:text-sm sm:gap-2">
             <p className="font-semibold text-red-500">
-              {formatNumber(data.product_items[0].price)}
+              {formatNumber(
+                Array.isArray(data.product_items[0].sizes) &&
+                  data.product_items[0].sizes.length > 0
+                  ? data.product_items[0].sizes[0].price
+                  : Array.isArray(data.product_items) &&
+                    data.product_items.length > 0
+                  ? data.product_items[0].price
+                  : 0
+              )}
+              {/* {formatNumber(data.product_items[0].price)} */}
             </p>
             <p className="text-slate-700 line-through">
-              {formatNumber(data.product_items[0].discount)}
+              {formatNumber(
+                Array.isArray(data.product_items[0].sizes) &&
+                  data.product_items[0].sizes.length > 0
+                  ? data.product_items[0].sizes[0].discount
+                  : Array.isArray(data.product_items) &&
+                    data.product_items.length > 0
+                  ? data.product_items[0].discount
+                  : 0
+              )}
             </p>
           </div>
           <div className="cart-wrapper">

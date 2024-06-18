@@ -44,6 +44,7 @@ const Button: React.FC<ButtonProps> = ({
         }
         ${custom ? custom : ""}
         `}
+        onClick={onClick}
     >
       {Icon && <Icon size={24} />}
       {label}

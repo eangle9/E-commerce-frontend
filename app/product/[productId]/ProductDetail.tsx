@@ -6,10 +6,13 @@ import truncateText from "@/utils/truncateText";
 import { Rating } from "@mui/material";
 import { useCallback, useState } from "react";
 import SetColor from "../../components/product/SetColor";
-import { SingleProduct } from "@/utils/types";
+import { Item, SingleProduct } from "@/utils/types";
 import Image from "next/image";
 import ProductImage from "@/app/components/product/ProductImage";
 import Button from "@/app/components/Button";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/features/cart/cartSlice";
+import SetSize from "@/app/components/product/SetSize";
 
 interface ProductDetailProps {
   product: SingleProduct;
@@ -17,6 +20,8 @@ interface ProductDetailProps {
 
 export type CartProductType = {
   id: number;
+  item_id: number;
+  size_id: number | null;
   name: string;
   description: string;
   selectedPrice: number;
@@ -24,7 +29,10 @@ export type CartProductType = {
   category: string;
   selectedImage: string;
   selectedColor: string;
-  quantity: number;
+  selectedSize: string;
+  discount: number;
+  // inStock: number
+  // quantity: number;
 };
 
 // export type SelectedImgType = {
@@ -34,17 +42,39 @@ export type CartProductType = {
 // };
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+  const distpatch = useDispatch();
   const [cartProduct, setCartProduct] = useState<CartProductType>({
     id: product.product_id,
+    item_id: product.items[0].item_id,
+    size_id:
+      Array.isArray(product.items[0].sizes) && product.items[0].sizes.length > 0
+        ? product.items[0].sizes[0].id
+        : null,
     name: product.name,
     description: product.description,
-    selectedPrice: product.items[0].price,
+    selectedPrice:
+      Array.isArray(product.items[0].sizes) && product.items[0].sizes.length > 0
+        ? product.items[0].sizes[0].price
+        : Array.isArray(product.items) && product.items.length > 0
+        ? product.items[0].price
+        : 0,
+    // selectedPrice: product.items[0].price,
     brand: product.brand,
     category: product.category,
     selectedImage: product.items[0].image_url,
     selectedColor: product.items[0].color,
+    selectedSize:
+      Array.isArray(product.items[0].sizes) && product.items[0].sizes.length > 0
+        ? product.items[0].sizes[0].size
+        : "",
+    discount:
+      Array.isArray(product.items[0].sizes) && product.items[0].sizes.length > 0
+        ? product.items[0].sizes[0].discount
+        : Array.isArray(product.items) && product.items.length > 0
+        ? product.items[0].discount
+        : 0,
     // selectedImage: { ...product.images[0] },
-    quantity: 1,
+    // quantity: 1,
   });
 
   // const handleSelectColor = useCallback(
@@ -56,14 +86,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   //   [cartProduct.selectedImage]
   // );
 
+  const handleAddToCart = (item: CartProductType) => {
+    distpatch(addToCart(item));
+  };
+
   const handleSelectColor = useCallback(
-    (image: string, color: string, price: number) => {
+    (
+      image: string,
+      color: string,
+      price: number,
+      discount: number,
+      item_id: number,
+      size_id: number | null
+    ) => {
       setCartProduct((prev) => {
         return {
           ...prev,
           selectedImage: image,
           selectedColor: color,
           selectedPrice: price,
+          discount: discount,
+          item_id: item_id,
+          size_id: size_id,
         };
       });
     },
@@ -72,6 +116,25 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       cartProduct.selectedColor,
       cartProduct.selectedPrice,
     ]
+  );
+
+  const handleSelectSize = useCallback(
+    (size: string, discount: number, price: number, size_id: number) => {
+      setCartProduct((prev) => {
+        return {
+          ...prev,
+          selectedSize: size,
+          discount: discount,
+          selectedPrice: price,
+          size_id: size_id,
+        };
+      });
+    },
+    [cartProduct.selectedSize, cartProduct.discount, cartProduct.selectedPrice]
+  );
+
+  const discountPercentage = Math.round(
+    (cartProduct.selectedPrice / cartProduct.discount) * 100 - 100
   );
 
   const averageRating = product.reviews?.length
@@ -101,6 +164,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             <p className="font-bold text-slate-900 text-2xl">
               {formatNumber(cartProduct.selectedPrice)}
             </p>
+            <div className="flex items-center gap-2 text-rose-500">
+              <p className="line-through">
+                {formatNumber(cartProduct.discount)}
+              </p>
+              <p>{discountPercentage}%</p>
+            </div>
             <div className="flex items-center gap-2">
               <Rating value={averageRating} precision={0.5} readOnly />
               <p className="font-bold text-slate-900">{averageRating}</p>
@@ -133,6 +202,26 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               cartProduct={cartProduct}
               handleSelectColor={handleSelectColor}
             />
+            {product.items.map((item: Item) => {
+              if (
+                item.color == cartProduct.selectedColor &&
+                Array.isArray(item.sizes) &&
+                item.sizes.length > 0
+              ) {
+                return (
+                  <>
+                    <Horizontal />
+                    <SetSize
+                      item={item}
+                      cartProduct={cartProduct}
+                      handleSelectSize={handleSelectSize}
+                    />
+                  </>
+                );
+              }
+              return null;
+            })}
+
             <Horizontal />
             <div className="flex gap-8 items-center">
               <div className="font-semibold">Quantity:</div>
@@ -148,7 +237,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             </div>
             <Horizontal />
             <div className="max-w-[300px]">
-              <Button label="AddToCart" onClick={() => {}} />
+              <Button
+                label="AddToCart"
+                onClick={() => {
+                  handleAddToCart(cartProduct);
+                }}
+              />
             </div>
           </div>
         </div>
