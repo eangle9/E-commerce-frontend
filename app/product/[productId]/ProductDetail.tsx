@@ -265,10 +265,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             <Horizontal />
             <div className="max-w-[300px]">
               <Button
-                label="AddToCart"
+                label="Add To Cart"
                 onClick={() => {
                   handleAddToCart(cartProduct);
                 }}
+                custom="rounded-[6px]"
               />
             </div>
           </div>

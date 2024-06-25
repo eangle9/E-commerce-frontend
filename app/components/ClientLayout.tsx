@@ -17,12 +17,12 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   const layoutRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    console.log("clicked target: ", event.target);
+    // console.log("clicked target: ", event.target);
     if (
-      layoutRef.current
-      //   !layoutRef.current.contains(event.target as Node)
+      layoutRef.current &&
+      !layoutRef.current.contains(event.target as Node)
     ) {
-      console.log("clicked outside", "closing menu");
+      // console.log("clicked outside", "closing menu");
       dispatch(closeMenu());
     }
   };

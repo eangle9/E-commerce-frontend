@@ -16,14 +16,14 @@ const HomeBanner: React.FC = () => {
             GET 50% OFF
           </p>
         </div>
-        <div className="w-1/3 relative aspect-video">
+        <div className="w-1/3 h-auto relative aspect-video">
           <Image
             src="/images/banner-image.png"
             alt="banner-image"
-            // width={2510}
-            // height={1292}
-            fill
-            className="object-contain"
+            layout="fill"
+            objectFit="contain"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            // className="object-contain"
           />
         </div>
       </div>

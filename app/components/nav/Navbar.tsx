@@ -16,13 +16,19 @@ import Image from "next/image";
 import { BiSolidCategory } from "react-icons/bi";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowDown } from "react-icons/md";
+// import { useRouter } from "next/router";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
-  const isOpen = useSelector((state: RootState) => state.menu.isOpen);
+  const isOpen: boolean = useSelector((state: RootState) => state.menu.isOpen);
   const [isLanClicked, setIsLanClicked] = useState<Boolean>(false);
   const [isCatClicked, setIsCatClicked] = useState<Boolean>(false);
-  // const [isClient, setIsClient] = useState<Boolean>(false);
+  // const router = useRouter()
+  // const [isClient, setIsClient] = useState<Boolean>(false); 
+
+  // const handleCartButtonClick = () => {
+  //   router.push("/cart")
+  // }
 
   const handleLanClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -351,7 +357,7 @@ const Navbar: React.FC = () => {
                   alt=""
                   width={100}
                   height={60}
-                  layout="fixed"
+                  // layout="fixed"
                   // className="w-20 h-14 sm:w-24 sm:h-16 md:w-32 md:h-20 lg:w-40 lg:h-28 xl:w-48 xl:h-32"
                 />
               </Link>
@@ -511,7 +517,7 @@ const Navbar: React.FC = () => {
                     </g>
                   </svg>
                 </button>
-                <button className="p-2 relative">
+                <Link href="/cart" className="p-2 relative">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -604,8 +610,8 @@ const Navbar: React.FC = () => {
                       />
                     </g>
                   </svg>
-                  <span className="absolute top-0 right-0 text-white bg-[#D23F57] rounded-xl"></span>
-                </button>
+                  <span className="absolute top-0 right-0 px-2 py-0.5 text-xs text-white bg-[#D23F57] rounded-xl">1</span>
+                </Link>
               </div>
             </div>
           </Container>

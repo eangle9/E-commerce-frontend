@@ -44,8 +44,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   // const discountPercentage = Math.round(
   //   (data.product_items[0].discount / data.product_items[0].price) * 100
   // );
-
-  console.log("data: ", data);
   const productRating =
     data.reviews?.reduce((acc: number, item: Review) => item.rating + acc, 0) /
     data.reviews?.length;
@@ -59,7 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
             fill
             src={data.product_items[0].image_url}
             // src="/images/hp-pavillion.jpg"
-            alt="hp-pavillion"
+            alt={data.name}
             className="image"
           />
           <div className="discount-badge">
