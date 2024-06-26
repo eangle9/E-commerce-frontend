@@ -11,9 +11,12 @@ import { RootState } from "@/redux/store";
 import { CartProductType } from "../product/[productId]/ProductDetail";
 import {
   decreaseCart,
+  getTotals,
   increaseCart,
   removeFromCart,
 } from "@/features/cart/cartSlice";
+import Link from "next/link";
+import { useEffect } from "react";
 
 const page = () => {
   const Horizontal = () => {
@@ -25,6 +28,12 @@ const page = () => {
   const items: CartProductType[] = useSelector(
     (state: RootState) => state.cart.cartItems
   );
+
+  const cartTotalAmount: number = useSelector(
+    (state: RootState) => state.cart.cartTotalAmount
+  );
+
+  const shippingFee: number = 50;
 
   const handleRemoveFromCart = (item: CartProductType) => {
     dispatch(removeFromCart(item));
@@ -38,15 +47,26 @@ const page = () => {
     dispatch(increaseCart(item));
   };
 
+  useEffect(() => {
+    dispatch(getTotals());
+  }, [items, dispatch]);
+
   return (
-    <div className="bg-[#f3f5f9]">
+    <div className="bg-[rgb(243,245,249)] min-h-screen">
       <Container>
-        <div className="grid grid-cols-1 lg:gap-8 lg:grid-cols-9 py-6">
-          {Array.isArray(items) && items.length > 0
-            ? items.map((item: CartProductType) => (
+        <div
+          className={`${
+            Array.isArray(items) && items.length === 0
+              ? "grid grid-cols-1"
+              : "grid grid-cols-1 lg:gap-6 lg:grid-cols-9 py-6"
+          }`}
+        >
+          <div className="col-span-6 space-y-6 mb-6 lg:mb-0">
+            {Array.isArray(items) && items.length > 0 ? (
+              items.map((item: CartProductType, index: number) => (
                 <div
-                  key={item.item_id}
-                  className="col-span-6 w-full lg:h-[160px] bg-white text-[#2b3445] shadow-lg flex flex-wrap items-center xxs:flex-nowrap rounded-[10px] relative mb-6 transition duration-300"
+                  key={index}
+                  className="w-full lg:h-[160px] bg-white text-[#2b3445] shadow-lg flex flex-wrap items-center xxs:flex-nowrap rounded-[10px] relative mb-6 lg:mb-0 transition duration-300"
                 >
                   <div className="w-full aspect-auto xxs:w-[160px]">
                     <Image
@@ -72,7 +92,9 @@ const page = () => {
                         {item.name}
                       </h2>
                       <p className="text-xs">
-                        {item.selectedSize}/{item.selectedColor}
+                        {item.selectedSize
+                          ? `${item.selectedSize}/${item.selectedColor}`
+                          : item.selectedColor}
                       </p>
                     </div>
                     <div className="flex items-center text-[14px] flex-wrap gap-2">
@@ -88,16 +110,26 @@ const page = () => {
                         onClick={() => {
                           handleDecreaseCartButton(item);
                         }}
-                        className="p-[4px] border border-[#d23f5780] text-[#D23F57] rounded-[6px] text-xl transition-all duration-300 hover:border-[#D23F57] hover:bg-rose-50"
+                        className={`p-[4px] border rounded-[6px] text-xl transition-all duration-300  ${
+                          item.cartQuantity === 1
+                            ? "text-[#00000042] border-[#0000001f] cursor-default"
+                            : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
+                        }`}
                       >
                         <HiOutlineMinusSm />
                       </button>
-                      <div className="font-semibold text-[15px]">1</div>
+                      <div className="font-semibold text-[15px]">
+                        {item.cartQuantity}
+                      </div>
                       <button
                         onClick={() => {
                           handleIncreaseCartButton(item);
                         }}
-                        className="p-[4px] border border-[#d23f5780] text-[#D23F57] rounded-[6px] text-xl hover:border-[#D23F57] hover:bg-rose-50"
+                        className={`p-[4px] border rounded-[6px] text-xl  ${
+                          item.inStock === item.cartQuantity
+                            ? "text-[#00000042] border-[#0000001f] cursor-default"
+                            : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
+                        }`}
                       >
                         <HiOutlinePlusSm />
                       </button>
@@ -105,37 +137,61 @@ const page = () => {
                   </div>
                 </div>
               ))
-            : null}
-          <div className="col-span-3 flex flex-col bg-white w-full text-[#2b3445] shadow-lg rounded-[10px] p-5">
-            <div className="mb-4">
-              <h1 className="font-bold text-xl">Summary</h1>
-              <Horizontal />
-            </div>
-            <div className="flex flex-col gap-6 items-center w-full">
-              <div className=" w-full flex justify-between items-center">
-                <p>Subtotal</p>
-                <p>{formatNumber(125)}</p>
-              </div>
-
-              <div className="w-full flex justify-between items-center">
-                <p>Shipping fee</p>
-                <p>{formatNumber(50)}</p>
-              </div>
-
-              <div className="w-full flex justify-between items-center font-bold mb-2">
-                <p>Total</p>
-                <p>{formatNumber(175)}</p>
-              </div>
-
-              <div className="w-full">
-                <Button
-                  label="Checkout"
-                  onClick={() => {}}
-                  custom="rounded-3xl"
+            ) : (
+              <div className="flex flex-col items-center text-center">
+                <Image
+                  src="/images/cartimage.webp"
+                  width={220}
+                  height={220}
+                  alt="cart_image"
                 />
+                <span className="font-bold text-[16px] my-3 py-4">
+                  No items yet? Continue shopping to explore more.
+                </span>
+                <Link href="/" className="min-w-[200px] xxs:min-w-[300px] my-2">
+                  <Button
+                    label="Explore items"
+                    onClick={() => {}}
+                    custom="rounded-3xl"
+                  />
+                </Link>
+              </div>
+            )}
+          </div>
+          {Array.isArray(items) && items.length > 0 && (
+            <div className="col-span-3 self-start sticky top-48">
+              <div className="flex flex-col bg-white w-full h-auto text-[#2b3445] shadow-lg rounded-[10px] p-5">
+                <div className="mb-4">
+                  <h1 className="font-bold text-xl">Summary</h1>
+                  <Horizontal />
+                </div>
+                <div className="flex flex-col gap-6 items-center w-full">
+                  <div className=" w-full flex justify-between items-center">
+                    <p>Subtotal</p>
+                    <p>{formatNumber(cartTotalAmount)}</p>
+                  </div>
+
+                  <div className="w-full flex justify-between items-center">
+                    <p>Shipping fee</p>
+                    <p>{formatNumber(shippingFee)}</p>
+                  </div>
+
+                  <div className="w-full flex justify-between items-center font-bold mb-2">
+                    <p>Total</p>
+                    <p>{formatNumber(cartTotalAmount + shippingFee)}</p>
+                  </div>
+
+                  <div className="w-full">
+                    <Button
+                      label="Checkout"
+                      onClick={() => {}}
+                      custom="rounded-3xl"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </Container>
     </div>

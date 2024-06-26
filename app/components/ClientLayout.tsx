@@ -8,6 +8,7 @@ import Footer from "../components/footer/Footer";
 import { closeMenu } from "@/features/menu/menuSlice";
 // import { useGetAllProductsQuery } from "@/features/products/productsApi";
 import { fetchProducts } from "@/features/products/productsSlice";
+import { getTotals } from "@/features/cart/cartSlice";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -52,6 +53,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 };
 
 store.dispatch(fetchProducts());
+store.dispatch(getTotals())
 
 const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,

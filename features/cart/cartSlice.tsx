@@ -122,9 +122,32 @@ const CartSlice = createSlice({
         }
       }
     },
+    getTotals: (state) => {
+      let { total, quantity } = state.cartItems.reduce(
+        (cartTotal, cartItem) => {
+          const { selectedPrice, cartQuantity } = cartItem;
+          const itemTotal = selectedPrice * cartQuantity;
+          cartTotal.total += itemTotal;
+          // cartTotal.quantity += cartQuantity;
+          return cartTotal;
+        },
+        {
+          total: 0,
+          quantity: state.cartItems.length,
+        }
+      );
+
+      state.cartTotalAmount = total;
+      state.cartTotalQuantity = quantity;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, decreaseCart, increaseCart } =
-  CartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  decreaseCart,
+  increaseCart,
+  getTotals,
+} = CartSlice.actions;
 export default CartSlice.reducer;

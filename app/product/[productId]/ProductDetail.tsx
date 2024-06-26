@@ -4,14 +4,14 @@ import formatNumber from "@/utils/formatNumber";
 import Container from "../../components/Container";
 import truncateText from "@/utils/truncateText";
 import { Rating } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SetColor from "../../components/product/SetColor";
 import { Item, SingleProduct } from "@/utils/types";
 import Image from "next/image";
 import ProductImage from "@/app/components/product/ProductImage";
 import Button from "@/app/components/Button";
 import { useDispatch } from "react-redux";
-import { addToCart } from "@/features/cart/cartSlice";
+import { addToCart, getTotals } from "@/features/cart/cartSlice";
 import SetSize from "@/app/components/product/SetSize";
 
 interface ProductDetailProps {
@@ -93,6 +93,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   //   },
   //   [cartProduct.selectedImage]
   // );
+
+  useEffect(() => {
+    distpatch(getTotals());
+  }, [cartProduct, distpatch]);
 
   const handleAddToCart = (item: CartProductType) => {
     distpatch(addToCart(item));
