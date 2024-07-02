@@ -28,7 +28,13 @@ const config: Config = {
       },
       maxWidth: {
         'custom-width': 'calc(100% - 32px)'
-      }
+      },
+      boxShadow: {
+        'custom': 'rgba(43, 52, 69, 0.1) 0px 4px 16px',
+      },
+      animation: {
+        'custom-animation': 'animation-1lit4vl 400ms cubic-bezier(0.4, 0, 0.2, 1) 0s 1 normal none running',
+      },
     },
   },
   // theme: {

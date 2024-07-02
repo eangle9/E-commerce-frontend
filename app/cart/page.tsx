@@ -16,7 +16,7 @@ import {
   removeFromCart,
 } from "@/features/cart/cartSlice";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const page = () => {
   const Horizontal = () => {
@@ -34,7 +34,25 @@ const page = () => {
   );
 
   const shippingFee: number = 50;
+  const [checkout, setCheckout] = useState<Boolean>(false);
 
+  const handleCheckout = () => {
+    if (window.scrollY >= 300) {
+      setCheckout(true);
+    } else {
+      setCheckout(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleCheckout);
+
+    return () => {
+      window.removeEventListener("scroll", handleCheckout);
+    };
+  }, []);
+
+  console.log("checkout: ", checkout)
   const handleRemoveFromCart = (item: CartProductType) => {
     dispatch(removeFromCart(item));
   };
@@ -159,7 +177,7 @@ const page = () => {
             )}
           </div>
           {Array.isArray(items) && items.length > 0 && (
-            <div className="col-span-3 self-start sticky top-48">
+            <div className={`col-span-3 self-start ${checkout ? 'sticky top-[90.66px]' : ''}`}>
               <div className="flex flex-col bg-white w-full h-auto text-[#2b3445] shadow-lg rounded-[10px] p-5">
                 <div className="mb-4">
                   <h1 className="font-bold text-xl">Summary</h1>
