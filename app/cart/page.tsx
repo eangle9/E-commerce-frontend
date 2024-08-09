@@ -52,7 +52,6 @@ const page = () => {
     };
   }, []);
 
-  console.log("checkout: ", checkout)
   const handleRemoveFromCart = (item: CartProductType) => {
     dispatch(removeFromCart(item));
   };
@@ -144,7 +143,7 @@ const page = () => {
                           handleIncreaseCartButton(item);
                         }}
                         className={`p-[4px] border rounded-[6px] text-xl  ${
-                          item.inStock === item.cartQuantity
+                          (item.inStock - item.cartQuantity) === item.cartQuantity
                             ? "text-[#00000042] border-[#0000001f] cursor-default"
                             : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
                         }`}

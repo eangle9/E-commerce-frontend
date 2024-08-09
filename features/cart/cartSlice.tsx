@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Item } from "@/utils/types";
 import { CartProductType } from "@/app/product/[productId]/ProductDetail";
+import { Bounce, toast } from "react-toastify";
+
+export interface AddToCartPayload {
+  product: CartProductType;
+  quantity: number;
+}
 
 interface CartState {
   cartItems: CartProductType[];
@@ -30,19 +36,42 @@ const CartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action: PayloadAction<CartProductType>) => {
+    addToCart: (state, action: PayloadAction<AddToCartPayload>) => {
+      const { product, quantity } = action.payload;
       const index: number = state.cartItems.findIndex(
         (item: CartProductType) =>
-          item.id === action.payload.id &&
-          item.item_id === action.payload.item_id &&
-          item.size_id === action.payload.size_id
+          item.id === product.id &&
+          item.item_id === product.item_id &&
+          item.size_id === product.size_id
       );
 
       if (index >= 0) {
-        state.cartItems[index].cartQuantity += 1;
+        state.cartItems[index].cartQuantity += quantity;
+        toast.info(`increased ${product.name} cart quantity`, {
+          position: "bottom-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       } else {
-        const tempProduct = { ...action.payload, cartQuantity: 1 };
+        const tempProduct = { ...product, cartQuantity: quantity };
         state.cartItems.push(tempProduct);
+        toast.success(`${product.name} added to cart`, {
+          position: "bottom-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       }
       if (typeof window !== "undefined") {
         localStorage.setItem("cartItems", JSON.stringify(state.cartItems));

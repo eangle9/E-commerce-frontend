@@ -7,6 +7,7 @@ import { Rating } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { MouseEvent, useState } from "react";
+import { IoEye } from "react-icons/io5";
 
 interface ProductCardProps {
   data: Product;
@@ -41,13 +42,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
         100
       : 0
   );
-  // const discountPercentage = Math.round(
-  //   (data.product_items[0].discount / data.product_items[0].price) * 100
-  // );
+
   const productRating =
     data.reviews?.reduce((acc: number, item: Review) => item.rating + acc, 0) /
     data.reviews?.length;
-  // const productRating = 3
 
   return (
     <Link href={`/product/${data.product_id}`} className="group outer-wrapper">
@@ -56,74 +54,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
           <Image
             fill
             src={data.product_items[0].image_url}
-            // src="/images/hp-pavillion.jpg"
             alt={data.name}
             className="image"
           />
           <div className="discount-badge">
             <span>{discountPercentage}% off</span>
           </div>
-          <div className="flex flex-col absolute -right-full transition-all duration-500 ease-in-out group-hover:right-1 group-hover:top-1">
+          <div className="flex flex-col absolute -right-full transition-all duration-400 ease-in-out group-hover:right-1 group-hover:top-1">
             <button onClick={handleEyeClick} className="btn-svg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                width="1em"
-                height="1em"
-                viewBox="0 0 256 256"
-                xmlSpace="preserve"
-              >
-                <defs></defs>
-                <g
-                  style={{
-                    stroke: "none",
-                    strokeWidth: 0,
-                    strokeDasharray: "none",
-                    strokeLinecap: "butt",
-                    strokeLinejoin: "miter",
-                    strokeMiterlimit: 10,
-                    fill: "currentColor",
-                    fillRule: "nonzero",
-                    opacity: 1,
-                  }}
-                  transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)"
-                >
-                  <path
-                    d="M 89.307 43.082 C 74.775 25.601 59.868 16.737 45 16.737 c -14.869 0 -29.775 8.864 -44.307 26.345 c -0.924 1.112 -0.924 2.724 0 3.836 C 15.225 64.399 30.131 73.264 45 73.264 c 14.868 0 29.775 -8.864 44.307 -26.346 C 90.231 45.806 90.231 44.194 89.307 43.082 z M 45 62 c -9.374 0 -17 -7.626 -17 -17 s 7.626 -17 17 -17 s 17 7.626 17 17 S 54.374 62 45 62 z"
-                    style={{
-                      stroke: "none",
-                      strokeWidth: 1,
-                      strokeDasharray: "none",
-                      strokeLinecap: "butt",
-                      strokeLinejoin: "miter",
-                      strokeMiterlimit: 10,
-                      fill: "currentColor",
-                      fillRule: "nonzero",
-                      opacity: 1,
-                    }}
-                    transform=" matrix(1 0 0 1 0 0) "
-                    strokeLinecap="round"
-                  />
-                  <circle
-                    cx="45"
-                    cy="45"
-                    r="9"
-                    style={{
-                      stroke: "none",
-                      strokeWidth: 1,
-                      strokeDasharray: "none",
-                      strokeLinecap: "butt",
-                      strokeLinejoin: "miter",
-                      strokeMiterlimit: 10,
-                      fill: "currentColor",
-                      fillRule: "nonzero",
-                      opacity: 1,
-                    }}
-                    transform="  matrix(1 0 0 1 0 0) "
-                  />
-                </g>
-              </svg>
+              <IoEye size={18} color="inherit" />
             </button>
             <button
               onClick={handleHeartClick}
@@ -135,8 +74,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
                 version="1.1"
-                width="1em"
-                height="1em"
+                width="18px"
+                height="18px"
                 viewBox="0 0 256 256"
                 xmlSpace="preserve"
               >
@@ -189,7 +128,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
               size="small"
             />
             <span>({data.product_items.length})</span>
-            {/* <span>({data.reviews.length})</span> */}
           </div>
           <div className="flex flex-col justify-start xs:items-center gap-1 text-xs xs:flex-row sm:text-sm sm:gap-2">
             <p className="font-semibold text-red-500">
@@ -202,7 +140,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
                   ? data.product_items[0].price
                   : 0
               )}
-              {/* {formatNumber(data.product_items[0].price)} */}
             </p>
             <p className="text-slate-700 line-through">
               {formatNumber(

@@ -9,6 +9,8 @@ import { closeMenu } from "@/features/menu/menuSlice";
 // import { useGetAllProductsQuery } from "@/features/products/productsApi";
 import { fetchProducts } from "@/features/products/productsSlice";
 import { getTotals } from "@/features/cart/cartSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -44,7 +46,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#00000066] z-10"
+          className="fixed inset-0 bg-[#00000066] z-[47]"
           onClick={() => dispatch(closeMenu())}
         ></div>
       )}
@@ -53,7 +55,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 };
 
 store.dispatch(fetchProducts());
-store.dispatch(getTotals())
+store.dispatch(getTotals());
 
 const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -61,6 +63,7 @@ const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <Provider store={store}>
       <ClientLayout>{children}</ClientLayout>
+      <ToastContainer />
     </Provider>
   );
 };

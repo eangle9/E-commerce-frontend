@@ -10,9 +10,17 @@ import { Item, SingleProduct } from "@/utils/types";
 import Image from "next/image";
 import ProductImage from "@/app/components/product/ProductImage";
 import Button from "@/app/components/Button";
-import { useDispatch } from "react-redux";
-import { addToCart, getTotals } from "@/features/cart/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  AddToCartPayload,
+  decreaseCart,
+  getTotals,
+  increaseCart,
+} from "@/features/cart/cartSlice";
 import SetSize from "@/app/components/product/SetSize";
+import { HiOutlineMinusSm, HiOutlinePlusSm } from "react-icons/hi";
+import { RootState } from "@/redux/store";
 
 interface ProductDetailProps {
   product: SingleProduct;
@@ -33,17 +41,15 @@ export type CartProductType = {
   discount: number;
   inStock: number;
   cartQuantity: number;
-  // quantity: number;
 };
 
-// export type SelectedImgType = {
-//   color: string;
-//   colorCode: string;
-//   image: string;
-// };
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const distpatch = useDispatch();
+  const [quantity, setQuantity] = useState<number>(1);
+  const cartItems: CartProductType[] = useSelector(
+    (state: RootState) => state.cart.cartItems
+  );
   const [cartProduct, setCartProduct] = useState<CartProductType>({
     id: product.product_id,
     item_id: product.items[0].item_id,
@@ -98,8 +104,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     distpatch(getTotals());
   }, [cartProduct, distpatch]);
 
-  const handleAddToCart = (item: CartProductType) => {
-    distpatch(addToCart(item));
+  const handleDecreaseQuantity = () => {
+    setQuantity((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleIncreaseQuantity = () => {
+    setQuantity((prev) => Math.min(cartProduct.inStock, prev + 1));
+  };
+
+  const handleAddToCart = (item: CartProductType, quantity: number) => {
+    const payload: AddToCartPayload = {
+      product: item,
+      quantity: quantity,
+    };
+    distpatch(addToCart(payload));
   };
 
   const handleSelectColor = useCallback(
@@ -179,6 +197,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     return <hr className="w-[30%] my-2" />;
   };
 
+  console.log("instock", cartProduct.inStock)
+  console.log("cartQuantity", cartProduct.cartQuantity)
+
   return (
     <div>
       <Container>
@@ -254,24 +275,36 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             })}
 
             <Horizontal />
-            <div className="flex gap-8 items-center">
-              <div className="font-semibold">Quantity:</div>
-              <div className="flex gap-4 items-center">
-                <button className="px-2 border border-slate-300 rounded cursor-pointer">
-                  -
-                </button>
-                <div>1</div>
-                <button className="px-2 border border-slate-300 rounded cursor-pointer">
-                  +
-                </button>
-              </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleDecreaseQuantity}
+                className={`p-[6px] border rounded-[6px] text-xl transition-all duration-300  ${
+                  quantity === 1
+                    ? "text-[#00000042] border-[#0000001f] cursor-default"
+                    : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
+                }`}
+              >
+                <HiOutlineMinusSm />
+              </button>
+              <div className="font-bold text-lg">{quantity}</div>
+              <button
+                onClick={handleIncreaseQuantity}
+                className={`p-[6px] border rounded-[6px] text-xl  ${
+                  (cartProduct.inStock - cartProduct.cartQuantity) === quantity
+                    ? "text-[#00000042] border-[#0000001f] cursor-default"
+                    : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
+                }`}
+                // disabled={(cartProduct.inStock - cartProduct.cartQuantity) === quantity}
+              >
+                <HiOutlinePlusSm />
+              </button>
             </div>
             <Horizontal />
             <div className="max-w-[300px]">
               <Button
                 label="Add To Cart"
                 onClick={() => {
-                  handleAddToCart(cartProduct);
+                  handleAddToCart(cartProduct, quantity);
                 }}
                 custom="rounded-[6px]"
               />
