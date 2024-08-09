@@ -51,8 +51,8 @@ export const fetchProducts = createAsyncThunk<Product[], void>(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("http://localhost:9000/products/list");
-      //   console.log('API Response:', response.data.data); // Debugging log
-      return response.data.data; // Accessing the nested data property
+        console.log('API Response:', response.data.data); // Debugging log
+      return response.data.data.data; // Accessing the nested data property
     } catch (err) {
       //   console.error("Error fetching products:", err);
       return rejectWithValue("Network error");

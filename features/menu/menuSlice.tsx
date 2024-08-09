@@ -1,15 +1,14 @@
-
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 interface MenuState {
-    isOpen: boolean;
+  isOpen: boolean;
 }
 const initialState: MenuState = {
-    isOpen: false,
+  isOpen: false,
 };
 
 const menuSlice = createSlice({
-  name: 'menu',
+  name: "menu",
   initialState,
   reducers: {
     toggleMenu: (state) => {

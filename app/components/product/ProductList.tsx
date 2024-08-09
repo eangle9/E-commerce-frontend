@@ -1,10 +1,8 @@
 "use client";
-// import { useGetAllProductsQuery } from "@/features/products/productsApi";
-import { products } from "@/utils/products";
+
 import ProductCard from "./ProductCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { Product } from "@/utils/types";
 import { useEffect, useState } from "react";
 
 const ProductList = () => {

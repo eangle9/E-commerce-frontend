@@ -27,16 +27,23 @@ const Button: React.FC<ButtonProps> = ({
       className={`
         disabled:opacity-70
         disabled:cursor-not-allowed
-        border-slate-700
+        border-[#d23f57]
         rounded
-        hover:opacity-80
+        hover:shadow-sm
+        hover:bg-[#e3364e]
+        active:shadow-2xl
         transition
         w-full
         flex
         items-center
         justify-center
+        capitalize
         gap-2
-        ${outline ? "bg-white text-slate-700" : "bg-slate-700 text-white"}
+        ${
+          outline
+            ? "bg-white text-slate-700"
+            : "bg-[#d23f57] text-white shadow-lg"
+        }
         ${
           small
             ? "text-sm py-1 px-2 font-light border"
@@ -44,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
         }
         ${custom ? custom : ""}
         `}
-        onClick={onClick}
+      onClick={onClick}
     >
       {Icon && <Icon size={24} />}
       {label}

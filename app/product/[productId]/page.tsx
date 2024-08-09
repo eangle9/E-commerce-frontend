@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import ProductDetail from "./ProductDetail";
-import { product } from "@/utils/product";
 import store, { RootState } from "@/redux/store";
 import { fetchSingleProduct } from "@/features/products/productsSlice";
 import { useSelector } from "react-redux";

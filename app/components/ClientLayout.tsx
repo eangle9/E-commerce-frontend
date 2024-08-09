@@ -8,6 +8,9 @@ import Footer from "../components/footer/Footer";
 import { closeMenu } from "@/features/menu/menuSlice";
 // import { useGetAllProductsQuery } from "@/features/products/productsApi";
 import { fetchProducts } from "@/features/products/productsSlice";
+import { getTotals } from "@/features/cart/cartSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -17,12 +20,12 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   const layoutRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    console.log("clicked target: ", event.target);
+    // console.log("clicked target: ", event.target);
     if (
-      layoutRef.current
-      //   !layoutRef.current.contains(event.target as Node)
+      layoutRef.current &&
+      !layoutRef.current.contains(event.target as Node)
     ) {
-      console.log("clicked outside", "closing menu");
+      // console.log("clicked outside", "closing menu");
       dispatch(closeMenu());
     }
   };
@@ -43,7 +46,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 
       {isOpen && (
         <div
-          className="fixed inset-0 bg-[#00000066] z-10"
+          className="fixed inset-0 bg-[#00000066] z-[47]"
           onClick={() => dispatch(closeMenu())}
         ></div>
       )}
@@ -52,6 +55,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 };
 
 store.dispatch(fetchProducts());
+store.dispatch(getTotals());
 
 const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -59,6 +63,7 @@ const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <Provider store={store}>
       <ClientLayout>{children}</ClientLayout>
+      <ToastContainer />
     </Provider>
   );
 };
