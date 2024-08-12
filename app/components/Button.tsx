@@ -10,6 +10,7 @@ interface ButtonProps {
   custom?: string;
   icon?: IconType;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: "submit" | "button" | "reset";
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,9 +21,11 @@ const Button: React.FC<ButtonProps> = ({
   custom,
   icon: Icon,
   onClick,
+  type = "button",
 }) => {
   return (
     <button
+      type={type}
       disabled={disabled}
       className={`
         disabled:opacity-70

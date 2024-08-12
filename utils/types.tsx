@@ -52,3 +52,14 @@ export interface User {
   email: string;
   phone_number: string;
 }
+
+export interface Values {
+  username: string;
+  email: string;
+  password: string;
+  retypePassword: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  agreement: Boolean;
+}
