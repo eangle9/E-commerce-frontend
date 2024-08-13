@@ -22,10 +22,15 @@ import { IoGiftSharp } from "react-icons/io5";
 import { GoSearch } from "react-icons/go";
 import { LiaCartPlusSolid } from "react-icons/lia";
 import { GiClothes, GiFruitBowl } from "react-icons/gi";
+import { togglePopup } from "@/features/popup/popupSlice";
+import LoginPopup from "../LoginPopup";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
   const isOpen: boolean = useSelector((state: RootState) => state.menu.isOpen);
+  const isVisible: boolean = useSelector(
+    (state: RootState) => state.popup.isVisible
+  );
   const [isLanClicked, setIsLanClicked] = useState<Boolean>(false);
   const [isCatClicked, setIsCatClicked] = useState<Boolean>(false);
   const [navbar, setNavbar] = useState<Boolean>(false);
@@ -152,7 +157,10 @@ const Navbar: React.FC = () => {
                 <button className="transition-all p-2 block md:hidden hover:bg-[#0000000a] rounded-[50%]">
                   <GoSearch className="size-5 md:size-6 text-inherit" />
                 </button>
-                <button className="p-2 transition-all hover:bg-[#0000000a] rounded-[50%]">
+                <button
+                  className="p-2 transition-all hover:bg-[#0000000a] rounded-[50%]"
+                  onClick={() => dispatch(togglePopup())}
+                >
                   <BsPerson className="size-5 md:size-6 text-inherit" />
                 </button>
                 <Link
@@ -533,7 +541,10 @@ const Navbar: React.FC = () => {
                   <GoSearch className="size-5 md:size-6 text-inherit" />
                 </button>
                 <button className="p-2">
-                  <BsPerson className="size-5 md:size-6 text-inherit" />
+                  <BsPerson
+                    className="size-5 md:size-6 text-inherit"
+                    onClick={() => dispatch(togglePopup())}
+                  />
                 </button>
                 <Link href="/cart" className="relative">
                   <button className="p-2 relative">
@@ -548,6 +559,7 @@ const Navbar: React.FC = () => {
           )}
         </Container>
       </div>
+      {isVisible && <LoginPopup />}
     </>
   );
 };

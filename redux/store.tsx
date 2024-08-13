@@ -4,6 +4,7 @@ import menuReducer from "../features/menu/menuSlice";
 import productsReducer from "@/features/products/productsSlice";
 import cartReducer from "@/features/cart/cartSlice";
 import usersReducer from "@/features/user/userSlice";
+import popupReducer from "@/features/popup/popupSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     products: productsReducer,
     cart: cartReducer,
     users: usersReducer,
+    popup: popupReducer,
     // [productsApi.reducerPath]: productsApi.reducer,
   },
   // middleware: (getDefaultMiddleware) =>

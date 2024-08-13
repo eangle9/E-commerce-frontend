@@ -11,12 +11,14 @@ import { fetchProducts } from "@/features/products/productsSlice";
 import { getTotals } from "@/features/cart/cartSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { closePopup } from "@/features/popup/popupSlice";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const dispatch = useDispatch();
   const isOpen = useSelector((state: RootState) => state.menu.isOpen);
+  const isVisible = useSelector((state: RootState) => state.popup.isVisible);
   const layoutRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -26,7 +28,12 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
       !layoutRef.current.contains(event.target as Node)
     ) {
       // console.log("clicked outside", "closing menu");
-      dispatch(closeMenu());
+      if (isOpen) {
+        dispatch(closeMenu());
+      }
+      // if (isVisible) {
+      //   dispatch(closePopup());
+      // }
     }
   };
 
@@ -50,6 +57,12 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
           onClick={() => dispatch(closeMenu())}
         ></div>
       )}
+      {/* {isVisible && (
+        <div
+          className="fixed inset-0 bg-[#00000066] z-[47]"
+          onClick={() => dispatch(closePopup())}
+        ></div>
+      )} */}
     </div>
   );
 };
