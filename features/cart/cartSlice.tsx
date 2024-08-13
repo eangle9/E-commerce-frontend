@@ -15,22 +15,46 @@ interface CartState {
 }
 
 const getInitialCartState = () => {
-  if (typeof window != "undefined") {
+  if (typeof window !== "undefined") {
     const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
+    const cartItems: CartProductType[] = storedCartItems
+      ? JSON.parse(storedCartItems)
+      : [];
+
+    // Calculate the initial cartTotalQuantity and cartTotalAmount
+    const { totalQuantity, totalAmount } = cartItems.reduce(
+      (totals, item) => {
+        totals.totalQuantity += item.cartQuantity;
+        totals.totalAmount += item.selectedPrice * item.cartQuantity;
+        return totals;
+      },
+      { totalQuantity: 0, totalAmount: 0 }
+    );
+
+    return {
+      cartItems,
+      cartTotalQuantity: totalQuantity,
+      cartTotalAmount: totalAmount,
+    };
   }
 
-  return [];
+  return {
+    cartItems: [],
+    cartTotalQuantity: 0,
+    cartTotalAmount: 0,
+  };
 };
 
-const initialState: CartState = {
-  // cartItems: localStorage.getItem("cartItems")
-  //   ? JSON.parse(localStorage.getItem("cartItems") as string)
-  //   : [],
-  cartItems: getInitialCartState(),
-  cartTotalQuantity: 0,
-  cartTotalAmount: 0,
-};
+const initialState: CartState = getInitialCartState();
+
+// {
+//   // cartItems: localStorage.getItem("cartItems")
+//   //   ? JSON.parse(localStorage.getItem("cartItems") as string)
+//   //   : [],
+//   cartItems: getInitialCartState(),
+//   cartTotalQuantity: 0,
+//   cartTotalAmount: 0,
+// };
 
 const CartSlice = createSlice({
   name: "cart",
