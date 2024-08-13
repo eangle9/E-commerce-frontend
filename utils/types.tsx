@@ -63,3 +63,8 @@ export interface Values {
   phoneNumber: string;
   agreement: Boolean;
 }
+
+export interface LoginValues {
+  email: string;
+  password: string;
+}
