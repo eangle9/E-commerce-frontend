@@ -13,6 +13,8 @@ import { Bounce, toast } from "react-toastify";
 import { IoEye } from "react-icons/io5";
 import { IoEyeOff } from "react-icons/io5";
 import { useState } from "react";
+import store from "@/redux/store";
+import { RegisterPayload, userRegister } from "@/features/user/userSlice";
 
 const RegisterForm = () => {
   const validationSchema = Yup.object().shape({
@@ -64,43 +66,65 @@ const RegisterForm = () => {
       return;
     }
 
+    const user: RegisterPayload = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      phoneNumber: values.phoneNumber,
+    };
+
     try {
-      const response = await axios.post("http://localhost:9000/user/register", {
-        username: values.username,
-        email: values.email,
-        password: values.password,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        phoneNumber: values.phoneNumber,
-      });
-      console.log("response: ", response);
-      toast.success(`${values.username} registered successfully`, {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
-      resetForm();
-      console.log("values: ", values);
+      const resultAction = await store.dispatch(userRegister(user));
+
+      if (userRegister.fulfilled.match(resultAction)) {
+        console.log("register successful", resultAction);
+        resetForm();
+      } else {
+        console.log("registration failed", resultAction.error.message);
+      }
     } catch (error) {
-      console.log("error: ", error);
-      toast.error(`${error}`, {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
+      console.log("unexpected error occured", error);
     }
+
+    // try {
+    //   const response = await axios.post("http://localhost:9000/user/register", {
+    //     username: values.username,
+    //     email: values.email,
+    //     password: values.password,
+    //     firstName: values.firstName,
+    //     lastName: values.lastName,
+    //     phoneNumber: values.phoneNumber,
+    //   });
+    //   console.log("response: ", response);
+    //   toast.success(`${values.username} registered successfully`, {
+    //     position: "bottom-left",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "colored",
+    //     transition: Bounce,
+    //   });
+    //   resetForm();
+    //   console.log("values: ", values);
+    // } catch (error) {
+    //   console.log("error: ", error);
+    //   toast.error(`${error}`, {
+    //     position: "bottom-left",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "colored",
+    //     transition: Bounce,
+    //   });
+    // }
   };
 
   const [eye, setEye] = useState<Boolean>(false);
@@ -193,6 +217,7 @@ const RegisterForm = () => {
                     />
 
                     <button
+                      type="button"
                       onClick={handleEyeClick}
                       className="absolute right-3 top-3"
                     >
@@ -228,6 +253,7 @@ const RegisterForm = () => {
                     />
 
                     <button
+                      type="button"
                       onClick={handleEyeClick}
                       className="absolute right-3 top-3"
                     >

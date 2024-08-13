@@ -35,7 +35,7 @@ const LoginForm = () => {
   // const router = useRouter();
   const loading = useSelector((state: RootState) => state.users.isLoading);
   const error = useSelector((state: RootState) => state.users.error);
-  const userInfo = useSelector((state: RootState) => state.users.userInfo);
+  const loginInfo = useSelector((state: RootState) => state.users.loginInfo);
 
   // useEffect(() => {
   //   if (typeof window != "undefined") {
