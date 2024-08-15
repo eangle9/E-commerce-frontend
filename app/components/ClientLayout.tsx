@@ -12,27 +12,35 @@ import { getTotals } from "@/features/cart/cartSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { closePopup } from "@/features/popup/popupSlice";
+import {
+  closeCat,
+  fetchProductCategory,
+} from "@/features/category/categorySlice";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const dispatch = useDispatch();
-  const isOpen = useSelector((state: RootState) => state.menu.isOpen);
-  const isVisible = useSelector((state: RootState) => state.popup.isVisible);
+  const isOpen: boolean = useSelector((state: RootState) => state.menu.isOpen);
+  const isOpened: boolean = useSelector(
+    (state: RootState) => state.category.isOpened
+  );
   const layoutRef = useRef<HTMLDivElement>(null);
+  // const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    // console.log("clicked target: ", event.target);
     if (
       layoutRef.current &&
       !layoutRef.current.contains(event.target as Node)
+      // dropdownRef.current &&
+      // !dropdownRef.current.contains(event.target as Node)
     ) {
-      // console.log("clicked outside", "closing menu");
       if (isOpen) {
         dispatch(closeMenu());
       }
-      // if (isVisible) {
-      //   dispatch(closePopup());
+
+      // if (isOpened) {
+      //   dispatch(closeCat());
       // }
     }
   };
@@ -47,7 +55,7 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <div ref={layoutRef} className="layout">
-      <Navbar />
+      <Navbar /* dropdownRef={dropdownRef}  */ />
       <main className="flex-grow">{children}</main>
       <Footer />
 
@@ -57,18 +65,28 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
           onClick={() => dispatch(closeMenu())}
         ></div>
       )}
-      {/* {isVisible && (
+
+      {/* {isOpened && (
         <div
-          className="fixed inset-0 bg-[#00000066] z-[47]"
-          onClick={() => dispatch(closePopup())}
+          className="fixed inset-0 z-[47]"
+          onClick={() => dispatch(closeCat())}
         ></div>
       )} */}
     </div>
   );
 };
 
-store.dispatch(fetchProducts());
+store.dispatch(
+  fetchProducts({
+    name: "",
+    category: "",
+    sort: "",
+    page: "",
+    per_page: "",
+  })
+);
 store.dispatch(getTotals());
+store.dispatch(fetchProductCategory());
 
 const WrappedClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
