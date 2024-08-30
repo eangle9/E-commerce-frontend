@@ -6,7 +6,7 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import Container from "@/app/components/Container";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import store, { RootState } from "@/redux/store";
 import { closeMenu, toggleMenu } from "@/features/menu/menuSlice";
 import Image from "next/image";
 import { BiSolidCategory } from "react-icons/bi";
@@ -16,28 +16,100 @@ import { IoIosArrowDown } from "react-icons/io";
 import { RiArrowDownSLine, RiDrinks2Fill } from "react-icons/ri";
 import { FaInstagram, FaPersonBooth, FaXTwitter } from "react-icons/fa6";
 import { FaFacebookSquare, FaSearch } from "react-icons/fa";
+import { MdSportsGymnastics } from "react-icons/md";
 import { FiSearch } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
 import { IoGiftSharp } from "react-icons/io5";
 import { GoSearch } from "react-icons/go";
 import { LiaCartPlusSolid } from "react-icons/lia";
 import { GiClothes, GiFruitBowl } from "react-icons/gi";
+import { FcAutomotive } from "react-icons/fc";
 import { togglePopup } from "@/features/popup/popupSlice";
 import LoginPopup from "../LoginPopup";
+import {
+  closeCat,
+  ProductCategory,
+  toggleCat,
+} from "@/features/category/categorySlice";
+import { FadeLoader, PulseLoader } from "react-spinners";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import axios from "axios";
+import { fetchProducts } from "@/features/products/productsSlice";
+import { NavbarProps, SearchQuery } from "@/utils/types";
+import { getTotals } from "@/features/cart/cartSlice";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const isOpen: boolean = useSelector((state: RootState) => state.menu.isOpen);
+  const isOpened: boolean = useSelector(
+    (state: RootState) => state.category.isOpened
+  );
   const isVisible: boolean = useSelector(
     (state: RootState) => state.popup.isVisible
   );
   const [isLanClicked, setIsLanClicked] = useState<Boolean>(false);
-  const [isCatClicked, setIsCatClicked] = useState<Boolean>(false);
+  // const [isCatClicked, setIsCatClicked] = useState<Boolean>(false);
   const [navbar, setNavbar] = useState<Boolean>(false);
+  const [search, setSearch] = useState<SearchQuery>({});
 
   const totalQuantity = useSelector(
     (state: RootState) => state.cart.cartTotalQuantity
   );
+  const categories: ProductCategory[] = useSelector(
+    (state: RootState) => state.category.categories
+  );
+  const loading: boolean = useSelector(
+    (state: RootState) => state.category.isLoading
+  );
+
+  useEffect(() => {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.addEventListener("keydown", function (event: KeyboardEvent) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("searchButton")?.click();
+        }
+      });
+    }
+
+    console.log("totalQtyy: ", totalQuantity)
+
+    return () => {
+      searchInput?.removeEventListener(
+        "keydown",
+        function (event: KeyboardEvent) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("searchButton")?.click();
+          }
+        }
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    // Extracting query parameters from the URL
+    const name = searchParams.get("name") || "";
+    const category = searchParams.get("category") || "";
+    const sort = searchParams.get("sort") || "";
+    const page = searchParams.get("page") || "";
+    const per_page = searchParams.get("per_page") || "";
+
+    // Dispatch the action to fetch products whenever search params change
+    store.dispatch(
+      fetchProducts({
+        name,
+        category,
+        sort,
+        page,
+        per_page,
+      })
+    );
+  }, [searchParams, dispatch]);
 
   const handleLanClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -46,7 +118,8 @@ const Navbar: React.FC = () => {
 
   const handleCatClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsCatClicked((prev) => !prev);
+    dispatch(toggleCat());
+    // setIsCatClicked((prev) => !prev);
   };
 
   const handleNavbar = () => {
@@ -56,6 +129,55 @@ const Navbar: React.FC = () => {
       setNavbar(false);
     }
   };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearch((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSearchClicked = () => {
+    const params = new URLSearchParams(searchParams);
+
+    Object.keys(search).forEach((key: string) => {
+      if (search[key]) {
+        params.set(key, search[key]);
+      }
+    });
+
+    router.push(`/?${params.toString()}`);
+    // window.location.href = `/?${params.toString()}`;
+  };
+
+  const handleCategoryClicked = (name: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("category", name);
+    router.push(`/?${params.toString()}`);
+    handleLogoClicked();
+  };
+
+  const handleLogoClicked = () => {
+    router.refresh();
+    setSearch({});
+    dispatch(closeCat());
+  };
+
+  // const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   if (e.target === e.currentTarget) {
+  //     dispatch(closeCat());
+  //   }
+  // };
+
+  // document
+  //   .getElementById("searchInput")
+  //   ?.addEventListener("keydown", function (event: KeyboardEvent) {
+  //     if (event.key === "Enter") {
+  //       event.preventDefault();
+  //       document.getElementById("searchButton")?.click();
+  //     }
+  //   });
 
   const handleResize = () => {
     if (window.innerWidth >= 1024) {
@@ -74,6 +196,15 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
+  const categoryIcons = [
+    <MdComputer size={14} color="inherit" />,
+    <GiClothes size={14} color="inherit" />,
+    <FaPersonBooth size={14} color="inherit" />,
+    <FcAutomotive size={14} color="inherit" />,
+    <RiDrinks2Fill size={14} color="inherit" />,
+    <MdSportsGymnastics size={14} color="inherit" />,
+  ];
+
   return (
     <>
       <div className="w-full shadow-sm shadow-slate-100/50">
@@ -84,6 +215,7 @@ const Navbar: React.FC = () => {
                 <Link
                   href="/"
                   className="text-lg font-extrabold hover:opacity-80 transition bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500"
+                  onClick={handleLogoClicked}
                 >
                   Eagle Shop
                 </Link>
@@ -135,30 +267,43 @@ const Navbar: React.FC = () => {
                   <MenuOutlinedIcon className="text-slate-500" />
                 </button>
               </div>
-              <Link href="/" className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="flex items-center gap-2"
+                onClick={handleLogoClicked}
+              >
                 <Image
-                  src="/images/eagle-image.jpg"
+                  src="/images/logo-eagle.png"
+                  // src="/images/eagle-logo2.jpg"
                   alt=""
                   width={100}
                   height={60}
                 />
               </Link>
-              <div className="w-0 hidden md:w-1/2 md:flex relative">
+              <div className="w-0 hidden text-sm md:w-1/2 md:flex relative">
                 <input
                   type="text"
-                  placeholder="Search..."
+                  name="name"
+                  value={search.name || ""}
+                  placeholder="Search for products..."
+                  id="searchInput"
+                  onChange={handleFilterChange}
                   className="w-full hidden md:block bg-[#F3F5F9] border-none"
                 />
-                <button className="searchbtn hidden md:block">
+                <button
+                  className="searchbtn hidden md:block"
+                  id="searchButton"
+                  onClick={handleSearchClicked}
+                >
                   <FiSearch size={16} color="inherit" />
                 </button>
               </div>
-              <div className="flex items-center text-xl text-[#7D879C]">
-                <button className="transition-all p-2 block md:hidden hover:bg-[#0000000a] rounded-[50%]">
+              <div className="flex items-center gap-1 text-xl text-[#7D879C]">
+                <button className="transition-all p-1 block md:hidden hover:bg-[#0000000a] rounded-[50%]">
                   <GoSearch className="size-5 md:size-6 text-inherit" />
                 </button>
                 <button
-                  className="p-2 transition-all hover:bg-[#0000000a] rounded-[50%]"
+                  className="p-1 transition-all hover:bg-[#0000000a] rounded-[50%]"
                   onClick={() => dispatch(togglePopup())}
                 >
                   <BsPerson className="size-5 md:size-6 text-inherit" />
@@ -167,7 +312,7 @@ const Navbar: React.FC = () => {
                   href="/cart"
                   className="relative transition-all hover:bg-[#0000000a] rounded-[50%]"
                 >
-                  <button className="p-2 relative">
+                  <button className="p-1 pr-1 relative">
                     <LiaCartPlusSolid className="size-5 md:size-6 text-inherit" />
                   </button>
                   <span className="flex flex-wrap justify-center items-center content-center absolute top-0 right-0 px-[6px] h-[20px] min-w-[20px] text-xs text-white bg-[#D23F57] rounded-[20px] transform scale-100 translate-x-1/2 -translate-y-1/2 origin-top-right">
@@ -250,74 +395,32 @@ const Navbar: React.FC = () => {
                   </div>
                   <MdKeyboardArrowRight
                     className={`size-5 ${
-                      isCatClicked
+                      isOpened
                         ? "transition-transform duration-500 ease-in-out transform rotate-90"
                         : ""
                     }`}
                   />
                 </button>
-                {isCatClicked && (
-                  <div className="absolute top-12 bg-white text-[#2B3445] rounded-sm shadow-sm shadow-slate-200">
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <MdComputer size={14} color="inherit" />
-                          <span className="pl-3 flex-grow">Electronics</span>
-                          <MdKeyboardArrowRight className="text-lg" />
-                        </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <GiClothes size={14} color="inherit" />
-                          <span className="pl-3 flex-grow">Fashion</span>
-                          <MdKeyboardArrowRight className="text-lg" />
-                        </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <GiFruitBowl size={14} color="inherit" />
-                          <span className="pl-3 flex-grow">Home & Garden</span>
-                          <MdKeyboardArrowRight className="text-lg" />
-                        </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <IoGiftSharp size={14} color="inherit" />
-                          <span className="pl-3 flex-grow">Gifts</span>
-                          <MdKeyboardArrowRight className="text-lg" />
-                        </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <FaPersonBooth size={14} color="inherit" />
+                {isOpened && (
+                  <div
+                    // ref={dropdownRef}
+                    className="absolute top-12 bg-white text-[#2B3445] rounded-sm shadow-sm shadow-slate-200"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {categories.map((category: ProductCategory, i: number) => (
+                      <div key={category.category_id} className="relative">
+                        <div
+                          className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]"
+                          onClick={() => handleCategoryClicked(category.name)}
+                        >
+                          {categoryIcons[i]}
                           <span className="pl-3 flex-grow">
-                            Health & Beauty
+                            {category.name}
                           </span>
                         </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
-                    <div className="relative">
-                      <Link href="#">
-                        <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                          <RiDrinks2Fill size={14} color="inherit" />
-                          <span className="pl-3 flex-grow">Groceries</span>
-                        </div>
-                      </Link>
-                      <div className="absolute"></div>
-                    </div>
+                        <div className="absolute"></div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -440,7 +543,11 @@ const Navbar: React.FC = () => {
                 </button>
               </div>
               <div className="flex gap-0 items-center">
-                <Link href="/" className="flex items-center gap-2">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2"
+                  onClick={handleLogoClicked}
+                >
                   <Image
                     src="/images/eagle-image.jpg"
                     alt=""
@@ -458,70 +565,23 @@ const Navbar: React.FC = () => {
                       <IoIosArrowDown />
                     </div>
                   </button>
-                  {isCatClicked && (
+                  {isOpened && (
                     <div className="absolute top-12 bg-white text-[#2B3445] rounded-sm shadow-sm shadow-slate-300">
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <MdComputer size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">Electronics</span>
-                            <MdKeyboardArrowRight className="text-lg" />
+                      {categories.map(
+                        (category: ProductCategory, i: number) => (
+                          <div className="relative">
+                            <Link href="#">
+                              <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
+                                {categoryIcons[i]}
+                                <span className="pl-3 flex-grow">
+                                  {category.name}
+                                </span>
+                              </div>
+                            </Link>
+                            <div className="absolute"></div>
                           </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <GiClothes size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">Fashion</span>
-                            <MdKeyboardArrowRight className="text-lg" />
-                          </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <GiFruitBowl size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">
-                              Home & Garden
-                            </span>
-                            <MdKeyboardArrowRight className="text-lg" />
-                          </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <IoGiftSharp size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">Gifts</span>
-                            <MdKeyboardArrowRight className="text-lg" />
-                          </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <FaPersonBooth size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">
-                              Health & Beauty
-                            </span>
-                          </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
-                      <div className="relative">
-                        <Link href="#">
-                          <div className="flex items-center h-10 min-w-64 px-4 cursor-pointer transition-colors duration-300 hover:text-[#D23F57]">
-                            <RiDrinks2Fill size={14} color="inherit" />
-                            <span className="pl-3 flex-grow">Groceries</span>
-                          </div>
-                        </Link>
-                        <div className="absolute"></div>
-                      </div>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
@@ -529,11 +589,18 @@ const Navbar: React.FC = () => {
               <div className="w-0 hidden md:w-1/2 md:flex md:relative">
                 <input
                   type="text"
+                  name="name"
+                  value={search.name || ""}
                   placeholder="Search..."
+                  onChange={handleFilterChange}
                   className="w-full hidden md:block bg-[#F3F5F9] border-none"
                 />
                 <button className="searchbtn hidden md:block">
-                  <FiSearch size={16} color="inherit" />
+                  <FiSearch
+                    size={16}
+                    color="inherit"
+                    onClick={handleSearchClicked}
+                  />
                 </button>
               </div>
               <div className="flex gap-1 items-center text-xl text-[#7D879C]">

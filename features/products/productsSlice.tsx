@@ -1,6 +1,8 @@
 import { SingleProduct } from "@/utils/types";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import { resolve } from "path";
 
 interface Product {
   product_id: number;
@@ -46,12 +48,33 @@ interface ProductsState {
   error: string | null;
 }
 
-export const fetchProducts = createAsyncThunk<Product[], void>(
+export const fetchProducts = createAsyncThunk<
+  Product[],
+  {
+    name?: string;
+    category?: string;
+    sort?: string;
+    page?: string;
+    per_page?: string;
+  }
+>(
   "products/fetchProducts",
-  async (_, { rejectWithValue }) => {
+  async (
+    { name = "", category = "", sort = "", page = "", per_page = "" },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axios.get("http://localhost:9000/products/list");
-        // console.log('API Response:', response.data.data); // Debugging log
+      const response = await axios.get("http://localhost:9000/products/list", {
+        params: {
+          name,
+          category,
+          sort,
+          page,
+          per_page,
+        },
+      });
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+      // console.log('API Response:', response.data.data); // Debugging log
       return response.data.data.data; // Accessing the nested data property
     } catch (err) {
       //   console.error("Error fetching products:", err);
@@ -65,6 +88,7 @@ export const fetchSingleProduct = createAsyncThunk<SingleProduct, number>(
   async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(`http://localhost:9000/products/${id}`);
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
       //   console.log('API Response:', response.data.data); // Debugging log
       return response.data.data; // Accessing the nested data property
     } catch (err) {

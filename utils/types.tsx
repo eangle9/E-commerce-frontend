@@ -68,3 +68,11 @@ export interface LoginValues {
   email: string;
   password: string;
 }
+
+export interface SearchQuery {
+  [key: string]: string;
+}
+
+export interface NavbarProps {
+  dropdownRef: React.RefObject<HTMLDivElement>;
+}

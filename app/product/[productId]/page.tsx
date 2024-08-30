@@ -5,6 +5,7 @@ import store, { RootState } from "@/redux/store";
 import { fetchSingleProduct } from "@/features/products/productsSlice";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { FadeLoader } from "react-spinners";
 
 interface IdParams {
   productId: string;
@@ -32,7 +33,11 @@ const page = ({ params }: { params: IdParams }) => {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="p-20 flex items-center justify-center">
+        <FadeLoader />
+      </div>
+    );
   }
 
   if (error) {

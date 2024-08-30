@@ -143,7 +143,7 @@ const page = () => {
                           handleIncreaseCartButton(item);
                         }}
                         className={`p-[4px] border rounded-[6px] text-xl  ${
-                          (item.inStock - item.cartQuantity) === item.cartQuantity
+                          item.inStock - item.cartQuantity === item.cartQuantity
                             ? "text-[#00000042] border-[#0000001f] cursor-default"
                             : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
                         }`}
@@ -176,7 +176,11 @@ const page = () => {
             )}
           </div>
           {Array.isArray(items) && items.length > 0 && (
-            <div className={`col-span-3 self-start ${checkout ? 'sticky top-[90.66px]' : ''}`}>
+            <div
+              className={`col-span-3 self-start ${
+                checkout ? "sticky top-[90.66px]" : ""
+              }`}
+            >
               <div className="flex flex-col bg-white w-full h-auto text-[#2b3445] shadow-lg rounded-[10px] p-5">
                 <div className="mb-4">
                   <h1 className="font-bold text-xl">Summary</h1>

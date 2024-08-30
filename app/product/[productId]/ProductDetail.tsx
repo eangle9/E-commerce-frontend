@@ -43,7 +43,6 @@ export type CartProductType = {
   cartQuantity: number;
 };
 
-
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const distpatch = useDispatch();
   const [quantity, setQuantity] = useState<number>(1);
@@ -118,6 +117,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       quantity: quantity,
     };
     distpatch(addToCart(payload));
+    distpatch(getTotals());
   };
 
   const handleSelectColor = useCallback(
@@ -197,8 +197,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     return <hr className="w-[30%] my-2" />;
   };
 
-  console.log("instock", cartProduct.inStock)
-  console.log("cartQuantity", cartProduct.cartQuantity)
+  // console.log("instock", cartProduct.inStock)
+  // console.log("cartQuantity", cartProduct.cartQuantity)
 
   return (
     <div>
@@ -290,7 +290,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               <button
                 onClick={handleIncreaseQuantity}
                 className={`p-[6px] border rounded-[6px] text-xl  ${
-                  (cartProduct.inStock - cartProduct.cartQuantity) === quantity
+                  cartProduct.inStock - cartProduct.cartQuantity === quantity
                     ? "text-[#00000042] border-[#0000001f] cursor-default"
                     : "border-[#d23f5780] text-[#D23F57] cursor-pointer hover:border-[#D23F57] hover:bg-rose-50"
                 }`}
