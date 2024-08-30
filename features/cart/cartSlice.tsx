@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Item } from "@/utils/types";
 import { CartProductType } from "@/app/product/[productId]/ProductDetail";
 import { Bounce, toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 export interface AddToCartPayload {
   product: CartProductType;
@@ -15,28 +16,29 @@ interface CartState {
 }
 
 const getInitialCartState = () => {
-  if (typeof window !== "undefined") {
-    const storedCartItems = localStorage.getItem("cartItems");
-    const cartItems: CartProductType[] = storedCartItems
-      ? JSON.parse(storedCartItems)
-      : [];
+  // if (typeof window !== "undefined") {
+  //   const storedCartItems = localStorage.getItem("cartItems");
+  //   const cartItems: CartProductType[] = storedCartItems
+  //     ? JSON.parse(storedCartItems)
+  //     : [];
 
-    // Calculate the initial cartTotalQuantity and cartTotalAmount
-    const { totalQuantity, totalAmount } = cartItems.reduce(
-      (totals, item) => {
-        totals.totalQuantity += item.cartQuantity;
-        totals.totalAmount += item.selectedPrice * item.cartQuantity;
-        return totals;
-      },
-      { totalQuantity: 0, totalAmount: 0 }
-    );
+  //   // Calculate the initial cartTotalQuantity and cartTotalAmount
+  //   const { totalQuantity, totalAmount } = cartItems.reduce(
+  //     (totals, item) => {
+  //       totals.totalQuantity += item.cartQuantity;
+  //       totals.totalAmount += item.selectedPrice * item.cartQuantity;
+  //       return totals;
+  //     },
+  //     { totalQuantity: 0, totalAmount: 0 }
+  //   );
 
-    return {
-      cartItems,
-      cartTotalQuantity: totalQuantity,
-      cartTotalAmount: totalAmount,
-    };
-  }
+  //   return {
+  //     cartItems,
+  //     cartTotalQuantity: totalQuantity,
+  //     cartTotalAmount: totalAmount,
+  //   };
+  // }
+  
 
   return {
     cartItems: [],
@@ -46,15 +48,6 @@ const getInitialCartState = () => {
 };
 
 const initialState: CartState = getInitialCartState();
-
-// {
-//   // cartItems: localStorage.getItem("cartItems")
-//   //   ? JSON.parse(localStorage.getItem("cartItems") as string)
-//   //   : [],
-//   cartItems: getInitialCartState(),
-//   cartTotalQuantity: 0,
-//   cartTotalAmount: 0,
-// };
 
 const CartSlice = createSlice({
   name: "cart",
@@ -175,6 +168,11 @@ const CartSlice = createSlice({
         }
       }
     },
+    rehydrateCart: (state, action: PayloadAction<CartState>) => {
+      state.cartItems = action.payload.cartItems;
+      state.cartTotalAmount = action.payload.cartTotalAmount;
+      state.cartTotalQuantity = action.payload.cartTotalQuantity;
+    },
     getTotals: (state) => {
       let { total, quantity } = state.cartItems.reduce(
         (cartTotal, cartItem) => {
@@ -201,6 +199,7 @@ export const {
   removeFromCart,
   decreaseCart,
   increaseCart,
+  rehydrateCart,
   getTotals,
 } = CartSlice.actions;
 export default CartSlice.reducer;

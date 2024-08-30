@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store, { RootState } from "@/redux/store";
 import Navbar from "../components/nav/Navbar";
@@ -8,7 +8,7 @@ import Footer from "../components/footer/Footer";
 import { closeMenu } from "@/features/menu/menuSlice";
 // import { useGetAllProductsQuery } from "@/features/products/productsApi";
 import { fetchProducts } from "@/features/products/productsSlice";
-import { getTotals } from "@/features/cart/cartSlice";
+import { getTotals, rehydrateCart } from "@/features/cart/cartSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { closePopup } from "@/features/popup/popupSlice";
@@ -16,6 +16,7 @@ import {
   closeCat,
   fetchProductCategory,
 } from "@/features/category/categorySlice";
+import { CartProductType } from "../product/[productId]/ProductDetail";
 
 const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -52,6 +53,40 @@ const ClientLayout: React.FC<{ children: React.ReactNode }> = ({
       document.removeEventListener("click", handleClickOutside);
     };
   }, [isOpen]);
+
+  const [isClient, setIsClient] = useState<Boolean>(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      const storedCartItems = localStorage.getItem("cartItems");
+      if (storedCartItems) {
+        const cartItems: CartProductType[] = JSON.parse(storedCartItems);
+
+        // Calculate the initial cartTotalQuantity and cartTotalAmount
+        const { quantity, total } = cartItems.reduce(
+          (totals, item) => {
+            const { selectedPrice, cartQuantity } = item;
+            const itemTotal = selectedPrice * cartQuantity;
+            totals.total += itemTotal;
+            return totals;
+          },
+          { quantity: cartItems.length, total: 0 }
+        );
+
+        dispatch(
+          rehydrateCart({
+            cartItems,
+            cartTotalQuantity: quantity,
+            cartTotalAmount: total,
+          })
+        );
+      }
+    }
+  }, [isClient]);
 
   return (
     <div ref={layoutRef} className="layout">

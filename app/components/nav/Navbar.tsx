@@ -36,6 +36,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { fetchProducts } from "@/features/products/productsSlice";
 import { NavbarProps, SearchQuery } from "@/utils/types";
+import { getTotals } from "@/features/cart/cartSlice";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch();
@@ -63,6 +64,32 @@ const Navbar: React.FC = () => {
   const loading: boolean = useSelector(
     (state: RootState) => state.category.isLoading
   );
+
+  useEffect(() => {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+      searchInput.addEventListener("keydown", function (event: KeyboardEvent) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("searchButton")?.click();
+        }
+      });
+    }
+
+    console.log("totalQtyy: ", totalQuantity)
+
+    return () => {
+      searchInput?.removeEventListener(
+        "keydown",
+        function (event: KeyboardEvent) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("searchButton")?.click();
+          }
+        }
+      );
+    };
+  }, []);
 
   useEffect(() => {
     // Extracting query parameters from the URL
@@ -120,14 +147,15 @@ const Navbar: React.FC = () => {
       }
     });
 
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
+    // window.location.href = `/?${params.toString()}`;
   };
 
   const handleCategoryClicked = (name: string) => {
-    console.log("catName", name);
     const params = new URLSearchParams(searchParams);
     params.set("category", name);
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
+    handleLogoClicked();
   };
 
   const handleLogoClicked = () => {
@@ -141,6 +169,15 @@ const Navbar: React.FC = () => {
   //     dispatch(closeCat());
   //   }
   // };
+
+  // document
+  //   .getElementById("searchInput")
+  //   ?.addEventListener("keydown", function (event: KeyboardEvent) {
+  //     if (event.key === "Enter") {
+  //       event.preventDefault();
+  //       document.getElementById("searchButton")?.click();
+  //     }
+  //   });
 
   const handleResize = () => {
     if (window.innerWidth >= 1024) {
@@ -236,7 +273,8 @@ const Navbar: React.FC = () => {
                 onClick={handleLogoClicked}
               >
                 <Image
-                  src="/images/eagle-image.jpg"
+                  src="/images/logo-eagle.png"
+                  // src="/images/eagle-logo2.jpg"
                   alt=""
                   width={100}
                   height={60}
@@ -248,22 +286,24 @@ const Navbar: React.FC = () => {
                   name="name"
                   value={search.name || ""}
                   placeholder="Search for products..."
+                  id="searchInput"
                   onChange={handleFilterChange}
                   className="w-full hidden md:block bg-[#F3F5F9] border-none"
                 />
                 <button
                   className="searchbtn hidden md:block"
+                  id="searchButton"
                   onClick={handleSearchClicked}
                 >
                   <FiSearch size={16} color="inherit" />
                 </button>
               </div>
-              <div className="flex items-center text-xl text-[#7D879C]">
-                <button className="transition-all p-2 block md:hidden hover:bg-[#0000000a] rounded-[50%]">
+              <div className="flex items-center gap-1 text-xl text-[#7D879C]">
+                <button className="transition-all p-1 block md:hidden hover:bg-[#0000000a] rounded-[50%]">
                   <GoSearch className="size-5 md:size-6 text-inherit" />
                 </button>
                 <button
-                  className="p-2 transition-all hover:bg-[#0000000a] rounded-[50%]"
+                  className="p-1 transition-all hover:bg-[#0000000a] rounded-[50%]"
                   onClick={() => dispatch(togglePopup())}
                 >
                   <BsPerson className="size-5 md:size-6 text-inherit" />
@@ -272,7 +312,7 @@ const Navbar: React.FC = () => {
                   href="/cart"
                   className="relative transition-all hover:bg-[#0000000a] rounded-[50%]"
                 >
-                  <button className="p-2 relative">
+                  <button className="p-1 pr-1 relative">
                     <LiaCartPlusSolid className="size-5 md:size-6 text-inherit" />
                   </button>
                   <span className="flex flex-wrap justify-center items-center content-center absolute top-0 right-0 px-[6px] h-[20px] min-w-[20px] text-xs text-white bg-[#D23F57] rounded-[20px] transform scale-100 translate-x-1/2 -translate-y-1/2 origin-top-right">
