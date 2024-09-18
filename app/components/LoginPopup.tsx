@@ -17,6 +17,18 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
 const LoginPopup = () => {
   const { isVisible } = useSelector((state: RootState) => state.popup);
+  useEffect(() => {
+    if (isVisible) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isVisible]);
+  
   if (!isVisible) return null;
 
   const validationSchema = Yup.object().shape({

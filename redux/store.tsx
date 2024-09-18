@@ -6,6 +6,7 @@ import cartReducer from "@/features/cart/cartSlice";
 import usersReducer from "@/features/user/userSlice";
 import popupReducer from "@/features/popup/popupSlice";
 import categoryReducer from "@/features/category/categorySlice";
+import productPopupReducer from "@/features/popup/productPopupSlice";
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     users: usersReducer,
     popup: popupReducer,
     category: categoryReducer,
+    productPopup: productPopupReducer,
     // [productsApi.reducerPath]: productsApi.reducer,
   },
   // middleware: (getDefaultMiddleware) =>
