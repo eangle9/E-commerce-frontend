@@ -38,7 +38,6 @@ const getInitialCartState = () => {
   //     cartTotalAmount: totalAmount,
   //   };
   // }
-  
 
   return {
     cartItems: [],
@@ -63,18 +62,38 @@ const CartSlice = createSlice({
       );
 
       if (index >= 0) {
-        state.cartItems[index].cartQuantity += quantity;
-        toast.info(`increased ${product.name} cart quantity`, {
-          position: "bottom-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
+        if (
+          state.cartItems[index].cartQuantity + quantity >
+          state.cartItems[index].inStock
+        ) {
+          toast.warn(
+            `${product.name} quantity number is beyond the stock limit`,
+            {
+              position: "bottom-left",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            }
+          );
+        } else {
+          state.cartItems[index].cartQuantity += quantity;
+          toast.info(`increased ${product.name} cart quantity`, {
+            position: "bottom-left",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        }
       } else {
         const tempProduct = { ...product, cartQuantity: quantity };
         state.cartItems.push(tempProduct);

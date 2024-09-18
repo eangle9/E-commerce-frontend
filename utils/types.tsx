@@ -1,6 +1,9 @@
 export interface Product {
   product_id: number;
   name: string;
+  category: string;
+  brand: string;
+  description: string;
   product_items: Item[];
   reviews: Review[];
 }
